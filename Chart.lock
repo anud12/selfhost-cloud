@@ -1,0 +1,9 @@
+dependencies:
+- name: artifactory
+  repository: ""
+  version: 0.1.0
+- name: in-memory-map
+  repository: file://./apps/in-memory-map/helm
+  version: 0.1.0
+digest: sha256:9f611a5b078fd25ffb3e36a368a8ebe34364335e420a17aeb183c105a9a61598
+generated: "2026-01-27T14:51:26.376155493+02:00"

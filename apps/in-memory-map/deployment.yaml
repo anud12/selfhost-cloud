@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: in-memory-map-deployment
+  labels:
+    tier: in-memory-map
+spec:
+  selector:
+    matchLabels:
+      tier: frontend
+  replicas: 1
+  template: 
+    metadata:
+      name: index.js
+      labels:
+        name: index.js
+        tier: frontend
+    spec:
+      containers:
+      - name: javascript
+        image: localhost:32000/in-memory-map:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 1
+          limits:
+            memory: 128Mi
+            cpu: 1
+        env:
+          - name : store
+            value: '{"version":"1", "name env": "env:name", "title": "env:MY_POD_NAME", "index2.js": "request:http://in-memory-map-service-2.learning.svc.cluster.local:3000"}'
+          - name: name
+            value: value
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
