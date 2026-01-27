@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{include "selfhost-cloud.name" .}}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{include "selfhost-cloud.name" .}}
+  template:
+    metadata:
+      labels:
+        app: {{include "selfhost-cloud.name" .}}
+        namespace: {{ .Values.global.namespace }}
+    spec:
+      serviceAccount: {{include "selfhost-cloud.name" .}}-sa
+      securityContext:
+        runAsUser: 1000       # UID to run all containers as
+        runAsGroup: 1000      # optional: set GID
+        fsGroup: 1000         # optional: sets group ownership for mounted volumes
+      containers:
+        - name: {{include "selfhost-cloud.name" .}}
+          image: {{.Values.global.artefactory}}/{{.Chart.Name}}
+          env:
+            - name: GITHUB_REPO
+              value: anud12/selfhost-cloud
+            - name: HELM_DRIVER
+              value: configmap

@@ -18,12 +18,12 @@ RUN apk add --no-cache \
 RUN apk add --no-cache \
     nodejs 
 
-# Install Helm
-RUN curl -fsSL https://get.helm.sh/helm-v3.12.1-linux-amd64.tar.gz -o helm.tar.gz \
-    && tar -zxvf helm.tar.gz \
-    && mv linux-amd64/helm /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm \
-    && rm -rf linux-amd64 helm.tar.gz
+# # Install Helm
+# RUN curl -fsSL https://get.helm.sh/helm-v3.12.1-linux-amd64.tar.gz -o helm.tar.gz \
+#     && tar -zxvf helm.tar.gz \
+#     && mv linux-amd64/helm /usr/local/bin/helm \
+#     && chmod +x /usr/local/bin/helm \
+#     && rm -rf linux-amd64 helm.tar.gz
 
 # Copy entrypoint script
 COPY entrypoint.sh /home/${USERNAME}/entrypoint.sh

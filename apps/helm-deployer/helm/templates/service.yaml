@@ -9,6 +9,6 @@ spec:
     app: {{include "selfhost-cloud.name" .}}
     namespace: {{ .Values.global.namespace }}
   ports:
-    - port: 5000
-      targetPort: 5000
-      nodePort: 30500
+    - port: 3001
+      targetPort: 3001
+      nodePort: 30501

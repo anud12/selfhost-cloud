@@ -3,7 +3,7 @@ set -e
 
 # Check for required environment variables
 if [[ -z "$GITHUB_REPO" ]]; then
-  echo "GITHUB_PAT and GITHUB_REPO must be set"
+  echo "GITHUB_REPO must be set"
   exit 1
 fi
 

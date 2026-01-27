@@ -1,5 +1,6 @@
 global:
   namespace: public
+  artefactory: localhost:30500
 
 artifactory:
   volumeRootDirectory: /home/acriha/volumes

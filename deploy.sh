@@ -1,2 +1,10 @@
+for file in ./charts/*.tgz; do
+  if [ -f "$file" ]; then
+    echo "Deleting $file"
+    rm -f "$file"
+  fi
+done
 helm dependency build;
-helm upgrade --install selfhost-cloud .
+
+HELM_DRIVER=configmap 
+helm upgrade selfhost-cloud --create-namespace --install  --cleanup-on-fail .
