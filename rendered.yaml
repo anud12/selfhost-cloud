@@ -1,0 +1,201 @@
+---
+# Source: selfhost-cloud/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: public
+---
+# Source: selfhost-cloud/charts/helm-deployer/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: selfhost-cloud-helm-deployer-sa
+  namespace: public
+---
+# Source: selfhost-cloud/charts/helm-deployer/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: selfhost-cloud-helm-deployer-release-manager
+  namespace: public
+rules:
+  - apiGroups: [""]        # core resources
+    resources: ["secrets","services","configmaps","pods"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  - apiGroups: ["apps"]    # deployments, statefulsets, etc.
+    resources: ["deployments","statefulsets","daemonsets","replicasets"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  - apiGroups: ["networking.k8s.io"]  # ingress, network policies
+    resources: ["ingresses","networkpolicies"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+---
+# Source: selfhost-cloud/charts/helm-deployer/templates/roleBinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: selfhost-cloud-helm-deployer-sa-binding
+  namespace: public
+subjects:
+  - kind: ServiceAccount
+    name: selfhost-cloud-helm-deployer-sa
+    namespace: public
+roleRef:
+  kind: Role
+  name: selfhost-cloud-helm-deployer-release-manager
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: selfhost-cloud/charts/artifactory/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: selfhost-cloud-artifactory-service
+  namespace: public
+spec:
+  type: NodePort
+  selector:
+    app: selfhost-cloud-artifactory
+    namespace: public
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30500
+---
+# Source: selfhost-cloud/charts/helm-deployer/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: selfhost-cloud-helm-deployer-service
+  namespace: public
+spec:
+  type: NodePort
+  selector:
+    app: selfhost-cloud-helm-deployer
+    namespace: public
+  ports:
+    - port: 3001
+      targetPort: 3001
+      nodePort: 30501
+---
+# Source: selfhost-cloud/charts/artifactory/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selfhost-cloud-artifactory-deployment
+  namespace: public
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selfhost-cloud-artifactory
+      namespace: public
+  template:
+    metadata:
+      labels:
+        app: selfhost-cloud-artifactory
+        namespace: public
+    spec:
+      containers:
+        - name: selfhost-cloud-artifactory
+          image: registry:2
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: selfhost-cloud-artifactory-volume
+              mountPath: /var/lib/registry
+          resources:
+            limits:
+              cpu: "8"
+              memory: "6Gi"
+            requests:
+              cpu: "100m"
+              memory: "500Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 30
+      volumes:
+        - name: selfhost-cloud-artifactory-volume
+          hostPath:
+            path: /home/acriha/volumes/selfhost-cloud/artifactory
+            type: DirectoryOrCreate
+---
+# Source: selfhost-cloud/charts/helm-deployer/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selfhost-cloud-helm-deployer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selfhost-cloud-helm-deployer
+  template:
+    metadata:
+      labels:
+        app: selfhost-cloud-helm-deployer
+        namespace: public
+    spec:
+      serviceAccount: selfhost-cloud-helm-deployer-sa
+      hostNetwork: true
+      securityContext:
+        runAsUser: 1000       # UID to run all containers as
+        runAsGroup: 1000      # optional: set GID
+        fsGroup: 1000         # optional: sets group ownership for mounted volumes
+      containers:
+        - name: selfhost-cloud-helm-deployer
+          image: localhost:30500/helm-deployer
+          env:
+            - name: GITHUB_REPO
+              value: anud12/selfhost-cloud
+            - name: HELM_DRIVER
+              value: configmap
+          volumeMounts:
+            - mountPath: /usr/local/bin/kubectl
+              name: selfhost-cloud-helm-deployer-kubectl
+
+            - mountPath: /usr/local/bin/helm
+              name: selfhost-cloud-helm-deployer-helm
+
+            - mountPath: /home/user/.kube
+              name: selfhost-cloud-helm-deployer-kubeconfig
+      volumes:
+        - name: selfhost-cloud-helm-deployer-kubectl
+          hostPath: 
+            path: /usr/local/bin/kubectl
+            type: File
+        - name: selfhost-cloud-helm-deployer-helm
+          hostPath:
+            path: /usr/local/bin/helm
+            type: File
+        - name: selfhost-cloud-helm-deployer-kubeconfig
+          hostPath:
+            path: /home/acriha/.kube
+            type: Directory
+---
+# Source: selfhost-cloud/charts/in-memory-map/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selfhost-cloud-in-memory-map-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selfhost-cloud-in-memory-map
+  template:
+    metadata:
+      labels:
+        app: selfhost-cloud-in-memory-map
+        namespace: public
+    spec:
+      containers:
+        - name: selfhost-cloud-in-memory-map
+          image: ngnix:latest

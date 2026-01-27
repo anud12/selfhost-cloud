@@ -10,6 +10,28 @@ const { spawn } = require('child_process');
 // Server configuration
 const PORT = process.env.PORT || 3001;
 
+/**
+ * @param {http.ServerResponse} res
+ * @param {string} script
+ * @returns {Promise<number>} exit code
+ */
+const runCommand = (res, script) =>
+    new Promise((resolve, reject) => {
+        const child = spawn('bash', ['-c', script], {
+            env: process.env
+        });
+
+        child.stdout.on('data', d => res.write(d));
+        child.stderr.on('data', d => res.write(`ERROR: ${d}`));
+
+        child.on('close', code => {
+            resolve();
+        });
+        child.on('error', code => {
+            reject();
+        });
+    });
+
 // Create HTTP server
 const server = http.createServer(
     /**
@@ -17,7 +39,7 @@ const server = http.createServer(
      * @param {http.IncomingMessage} req - HTTP request object
      * @param {http.ServerResponse} res - HTTP response object
      */
-    (req, res) => {
+    async (req, res) => {
     switch (req.method) {
         case "GET": {
             // Path to your shell script
@@ -26,12 +48,18 @@ const server = http.createServer(
             // Set headers for text streaming (chunked)
             res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Transfer-Encoding': 'chunked' });
             const scriptPath = './deploy.sh';
-            const child = spawn('bash', [scriptPath]);
-            // Pipe stdout and stderr, mark errors, and close on exit
-            child.stdout.on('data', chunk => res.write(chunk.toString()));
-            child.stderr.on('data', chunk => res.write(`ERROR: ${chunk.toString()}`));
-            child.on('close', code => res.end(`\nScript exited with code ${code}\n`));
-            child.on('error', err => res.end(`Failed to start script: ${err.message}\n`));
+            await runCommand(res, "whoami")
+            await runCommand(res, "kubectl config view")
+            await runCommand(res, `
+                helm template selfhost-cloud . > rendered.yaml ;
+                wc -c rendered.yaml;
+                cat rendered.yaml;
+                `)
+            await runCommand(res, `
+                cd ../..
+                ./deploy.sh
+                `)
+            res.end(`\nDone\n`)
         } break;
             
     }
