@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3001;
  */
 const runCommand = (res, script) =>
     new Promise((resolve, reject) => {
+        res.write("Running script:\n> " + script.split("\n").join("\n> ") + "\n\n")
         const child = spawn('bash', ['-c', script], {
             env: process.env
         });
@@ -48,17 +49,38 @@ const server = http.createServer(
             // Set headers for text streaming (chunked)
             res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Transfer-Encoding': 'chunked' });
             const scriptPath = './deploy.sh';
-            await runCommand(res, "whoami")
-            await runCommand(res, "kubectl config view")
             await runCommand(res, `
-                helm template selfhost-cloud . > rendered.yaml ;
-                wc -c rendered.yaml;
-                cat rendered.yaml;
+                # Check for required environment variables
+                if [[ -z "$GITHUB_REPO" ]]; then
+                echo "GITHUB_REPO must be set"
+                exit 1
+                fi
+
+                echo "Cloning repository"
+                # Clone the repo using the PAT
+                git init
+                git remote add origin https://github.com/$GITHUB_REPO.git
+                git fetch
+                git pull origin main
+
+                ls -al;
+
+                # Make deploy.sh executable
+                chmod +x deploy.sh
+
+
+                echo "Running deploy script"
+
+                # Run deploy.sh
+                # ./deploy.sh
                 `)
-            await runCommand(res, `
-                cd ../..
-                ./deploy.sh
-                `)
+            // await runCommand(res, `
+            //     helm template selfhost-cloud . > rendered.yaml ;
+            //     wc -c rendered.yaml;
+            //     cat rendered.yaml;
+            //     `)
+            await runCommand(res, `cat ./deploy.sh`)
+            await runCommand(res, `./deploy.sh`)
             res.end(`\nDone\n`)
         } break;
             

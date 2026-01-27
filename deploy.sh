@@ -1,4 +1,4 @@
-helm uninstall selfhost-cloud
+# helm uninstall selfhost-cloud
 
 for file in ./charts/*.tgz; do
   if [ -f "$file" ]; then
@@ -6,7 +6,5 @@ for file in ./charts/*.tgz; do
     rm -f "$file"
   fi
 done
-helm dependency build;
-
-HELM_DRIVER=configmap 
-helm upgrade selfhost-cloud --create-namespace --install  --cleanup-on-fail .
+helm dependency build
+helm template selfhost-cloud . | kubectl apply -f -
