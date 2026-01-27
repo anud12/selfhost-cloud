@@ -50,16 +50,11 @@ const server = http.createServer(
             res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Transfer-Encoding': 'chunked' });
             const scriptPath = './deploy.sh';
             await runCommand(res, `
-                # Check for required environment variables
-                if [[ -z "$GITHUB_REPO" ]]; then
-                echo "GITHUB_REPO must be set"
-                exit 1
-                fi
-
                 echo "Cloning repository"
                 # Clone the repo using the PAT
+                cd ./repo
                 git init
-                git remote add origin https://github.com/$GITHUB_REPO.git
+                git remote add origin https://github.com/anud12/selfhost-cloud.git
                 git fetch
                 git pull origin main
 
@@ -72,12 +67,10 @@ const server = http.createServer(
                 echo "Running deploy script"
 
                 # Run deploy.sh
-                # ./deploy.sh
+                .repo/deploy.sh
+
+                rm -r ./repo
                 `)
-            await runCommand(res, `
-                pwd;
-                ./deploy.sh
-            `)
             res.end(`\nDone\n`)
         } break;
             
@@ -86,7 +79,7 @@ const server = http.createServer(
 
 // Start listening
 server.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
+    console.log(`${new Date().toISOString()}: Server listening on http://localhost:${PORT}`);
 });
 
 // -----------------------------

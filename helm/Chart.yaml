@@ -7,11 +7,9 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-  - name: "artifactory"
-    version: "0.1.0"
   - name: "in-memory-map"
-    repository: "file://./apps/in-memory-map/helm"
+    repository: "file://../apps/in-memory-map/helm"
     version: "0.1.0"
   - name: "helm-deployer"
-    repository: "file://./apps/helm-deployer/helm"
+    repository: "file://../apps/helm-deployer/helm"
     version: "0.1.0"

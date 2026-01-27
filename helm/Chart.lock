@@ -1,0 +1,9 @@
+dependencies:
+- name: in-memory-map
+  repository: file://../apps/in-memory-map/helm
+  version: 0.1.0
+- name: helm-deployer
+  repository: file://../apps/helm-deployer/helm
+  version: 0.1.0
+digest: sha256:94697e403809b4fe6ce78cefb2e4fc7ee133223e085cb4ce5c0ebf7e2d22a19d
+generated: "2026-01-27T21:02:20.406692468+02:00"

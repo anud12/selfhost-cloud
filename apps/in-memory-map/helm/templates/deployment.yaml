@@ -15,4 +15,4 @@ spec:
     spec:
       containers:
         - name: {{include "selfhost-cloud.name" .}}
-          image: ngnix:latest
+          image: {{.Values.global.artefactory}}/{{.Chart.Name}}
