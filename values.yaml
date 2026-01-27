@@ -1,0 +1,5 @@
+global:
+  namespace: public
+
+artifactory:
+  volumeRootDirectory: /home/acriha/volumes

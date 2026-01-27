@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Release.Name}}-{{.Chart.Name}}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Release.Name}}-{{.Chart.Name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Release.Name}}-{{.Chart.Name}}
+        namespace: {{ .Values.global.namespace }}
+    spec:
+      containers:
+        - name: {{.Release.Name}}-{{.Chart.Name}}
+          image: registry:2
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: {{.Release.Name}}-{{.Chart.Name}}-volume
+              mountPath: /var/lib/registry
+          resources:
+            limits:
+              cpu: "8"
+              memory: "6Gi"
+            requests:
+              cpu: "100m"
+              memory: "500Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 30
+      volumes:
+        - name: {{.Release.Name}}-{{.Chart.Name}}-volume
+          hostPath:
+            path: {{.Values.volumeRootDirectory}}/{{.Release.Name}}/{{.Chart.Name}}
+            type: DirectoryOrCreate
