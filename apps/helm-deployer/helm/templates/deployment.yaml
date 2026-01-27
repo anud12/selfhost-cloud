@@ -1,55 +1,87 @@
-apiVersion: apps/v1
-kind: Deployment
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{include "selfhost-cloud.name" .}}-deployment
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: {{include "selfhost-cloud.name" .}}
+#   template:
+#     metadata:
+#       labels:
+#         app: {{include "selfhost-cloud.name" .}}
+#         namespace: {{ .Values.global.namespace }}
+#     spec:
+#       serviceAccount: {{include "selfhost-cloud.name" .}}-sa
+#       hostNetwork: true
+#       dnsPolicy: ClusterFirstWithHostNet
+#       securityContext:
+#         runAsUser: 1000       # UID to run all containers as
+#         runAsGroup: 1000      # optional: set GID
+#         fsGroup: 1000         # optional: sets group ownership for mounted volumes
+#         runAsNonRoot: true
+#       containers:
+#         - name: {{include "selfhost-cloud.name" .}}
+#           image: {{.Values.global.artefactory}}/{{.Chart.Name}}
+#           env:
+#             - name: GITHUB_REPO
+#               value: anud12/selfhost-cloud
+#             - name: HELM_DRIVER
+#               value: configmap
+#             - name: KUBECONFIG
+#               value: /var/run/secrets/kubernetes.io/serviceaccount/kubeconfig
+#           volumeMounts:
+#             - mountPath: /usr/local/bin/kubectl
+#               name: {{include "selfhost-cloud.name" .}}-kubectl
+
+#             - mountPath: /usr/local/bin/helm
+#               name: {{include "selfhost-cloud.name" .}}-helm
+
+#             - mountPath: /home/user/.kube
+#               name: {{include "selfhost-cloud.name" .}}-kubeconfig
+#       volumes:
+#         - name: {{include "selfhost-cloud.name" .}}-kubectl
+#           hostPath: 
+#             path: /usr/local/bin/kubectl
+#             type: File
+#         - name: {{include "selfhost-cloud.name" .}}-helm
+#           hostPath:
+#             path: /usr/local/bin/helm
+#             type: File
+#         - name: {{include "selfhost-cloud.name" .}}-kubeconfig
+#           hostPath:
+#             path: /home/acriha/.kube
+#             type: Directory
+
+
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: {{include "selfhost-cloud.name" .}}-deployment
+  name: root-command-job
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: {{include "selfhost-cloud.name" .}}
+  backoffLimit: 0
   template:
-    metadata:
-      labels:
-        app: {{include "selfhost-cloud.name" .}}
-        namespace: {{ .Values.global.namespace }}
     spec:
-      serviceAccount: {{include "selfhost-cloud.name" .}}-sa
+      restartPolicy: Never
+
+      
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      securityContext:
-        runAsUser: 1000       # UID to run all containers as
-        runAsGroup: 1000      # optional: set GID
-        fsGroup: 1000         # optional: sets group ownership for mounted volumes
-        runAsNonRoot: true
+      hostPID: true
+      hostIPC: true
+
       containers:
-        - name: {{include "selfhost-cloud.name" .}}
-          image: {{.Values.global.artefactory}}/{{.Chart.Name}}
-          env:
-            - name: GITHUB_REPO
-              value: anud12/selfhost-cloud
-            - name: HELM_DRIVER
-              value: configmap
-            - name: KUBECONFIG
-              value: /var/run/secrets/kubernetes.io/serviceaccount/kubeconfig
-          volumeMounts:
-            - mountPath: /usr/local/bin/kubectl
-              name: {{include "selfhost-cloud.name" .}}-kubectl
+        - name: runner
+          image: alpine:3.19
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Running as:"
+              id
+              whoami
+              touch /tmp/runs-as-root
 
-            - mountPath: /usr/local/bin/helm
-              name: {{include "selfhost-cloud.name" .}}-helm
-
-            - mountPath: /home/user/.kube
-              name: {{include "selfhost-cloud.name" .}}-kubeconfig
-      volumes:
-        - name: {{include "selfhost-cloud.name" .}}-kubectl
-          hostPath: 
-            path: /usr/local/bin/kubectl
-            type: File
-        - name: {{include "selfhost-cloud.name" .}}-helm
-          hostPath:
-            path: /usr/local/bin/helm
-            type: File
-        - name: {{include "selfhost-cloud.name" .}}-kubeconfig
-          hostPath:
-            path: /home/acriha/.kube
-            type: Directory
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false

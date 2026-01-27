@@ -74,13 +74,10 @@ const server = http.createServer(
                 # Run deploy.sh
                 # ./deploy.sh
                 `)
-            // await runCommand(res, `
-            //     helm template selfhost-cloud . > rendered.yaml ;
-            //     wc -c rendered.yaml;
-            //     cat rendered.yaml;
-            //     `)
-            await runCommand(res, `cat ./deploy.sh`)
-            await runCommand(res, `./deploy.sh`)
+            await runCommand(res, `
+                pwd;
+                ./deploy.sh
+            `)
             res.end(`\nDone\n`)
         } break;
             
