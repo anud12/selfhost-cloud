@@ -8,4 +8,4 @@ done
 
 HELM_DRIVER=configmap 
 helm dependency build
-helm upgrade --install --create-namespace --cleanup-on-fail --kube-as-user 1000 selfhost-cloud .
+helm upgrade --install --create-namespace --cleanup-on-fail --kube-as-user acriha selfhost-cloud .
