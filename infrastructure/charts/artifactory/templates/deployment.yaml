@@ -34,14 +34,14 @@ spec:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 30
+            initialDelaySeconds: 2
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 30
+            initialDelaySeconds: 2
+            periodSeconds: 5
       volumes:
         - name: {{include "selfhost-cloud.name" .}}-volume
           hostPath:

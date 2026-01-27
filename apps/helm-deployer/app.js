@@ -52,6 +52,7 @@ const server = http.createServer(
             await runCommand(res, `
                 echo "Cloning repository"
                 # Clone the repo using the PAT
+                mkdir ./repo
                 cd ./repo
                 git init
                 git remote add origin https://github.com/anud12/selfhost-cloud.git
@@ -67,9 +68,7 @@ const server = http.createServer(
                 echo "Running deploy script"
 
                 # Run deploy.sh
-                .repo/deploy.sh
-
-                rm -r ./repo
+                ./deploy.sh
                 `)
             res.end(`\nDone\n`)
         } break;
