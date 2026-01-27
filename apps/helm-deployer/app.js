@@ -69,6 +69,8 @@ const server = http.createServer(
 
                 # Run deploy.sh
                 ./deploy.sh
+
+                rm -r ./repo
                 `)
             res.end(`\nDone\n`)
         } break;
