@@ -8,4 +8,4 @@ done
 
 HELM_DRIVER=configmap 
 helm dependency build
-helm upgrade --install --create-namespace --cleanup-on-fail selfhost-cloud .
+helm upgrade --install --create-namespace --rollback-on-failure --cleanup-on-fail --reuse-values selfhost-cloud .
