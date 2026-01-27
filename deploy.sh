@@ -1,2 +1,2 @@
 helm dependency build;
-helm upgrade selfhost-cloud .
+helm upgrade --install selfhost-cloud .
