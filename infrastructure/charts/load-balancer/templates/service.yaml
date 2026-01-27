@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{include "selfhost-cloud.name" .}}-ingress
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    # Optional: annotation examples for nginx-ingress
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /infrastructure/helm-deployer
+        pathType: Prefix
+        backend:
+          service:
+            name: selfhost-cloud-helm-deployer-service-external
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: notfound
+            port:
+              number: 80

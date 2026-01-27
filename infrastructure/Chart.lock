@@ -2,5 +2,11 @@ dependencies:
 - name: artifactory
   repository: ""
   version: 0.1.0
-digest: sha256:e7f6bb4ce687ae12128c691ffcd6bfb12d6f4cc1bb3e2c602dc2237f6cb02b14
-generated: "2026-01-27T21:00:26.049027014+02:00"
+- name: load-balancer
+  repository: ""
+  version: 0.1.0
+- name: helm-deployer
+  repository: file://../apps/helm-deployer/helm
+  version: 0.1.0
+digest: sha256:b3bc300a5ce2f75e37a99c52f2dbf13d60b9a14b074c9eec5825349bf0f85cf4
+generated: "2026-01-27T22:00:19.073565023+02:00"

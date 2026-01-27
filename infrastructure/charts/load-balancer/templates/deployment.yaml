@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notfound-nginx-conf
+  namespace: {{ .Values.global.namespace }}
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+      # Always return 404 with custom HTML body
+      location / {
+        default_type text/html;
+        return 404 '<!doctype html><html><head><meta charset="utf-8"><title>Not Found</title></head><body><h1>404 — Not Found</h1><p>The requested resource was not found on this server.</p></body></html>';
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notfound
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notfound
+  template:
+    metadata:
+      labels:
+        app: notfound
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: notfound-nginx-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notfound
+  namespace: {{ .Values.global.namespace }}
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: notfound
