@@ -9,4 +9,4 @@ helm dependency build;
 
 HELM_DRIVER=configmap 
 helm dependency build
-helm upgrade --install --namespace-create selfhost-cloud .
+helm upgrade --install --create-namespace selfhost-cloud .
