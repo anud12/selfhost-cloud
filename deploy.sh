@@ -5,8 +5,7 @@ for file in ./charts/*.tgz; do
     rm -f "$file"
   fi
 done
-helm dependency build;
 
 HELM_DRIVER=configmap 
 helm dependency build
-helm upgrade --install --create-namespace selfhost-cloud .
+helm upgrade --install --create-namespace --cleanup-on-fail --kube-as-user 1000 selfhost-cloud .
