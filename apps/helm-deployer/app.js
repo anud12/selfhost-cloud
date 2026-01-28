@@ -69,7 +69,8 @@ const server = http.createServer(
 
                 # Run deploy.sh
                 ./deploy.sh
-
+                
+                cd ../
                 rm -r ./repo
                 `)
             res.end(`\nDone\n`)
