@@ -23,7 +23,7 @@ fi
 # -----------------------------------------
 # 1. Start the server as a daemon (current session)
 # -----------------------------------------
-nohup node "$SERVER_PATH" > "$LOG_PATH" 2>&1 &
+# nohup node "$SERVER_PATH" >> "$LOG_PATH" 2>&1 &
 PID=$!
 echo "Node.js server started as daemon with PID: $PID"
 echo "Logs are being written to $LOG_PATH"
@@ -49,8 +49,8 @@ ExecStart=$(which node) $SERVER_PATH
 WorkingDirectory=$(pwd)
 Restart=always
 RestartSec=5
-StandardOutput=file:$LOG_PATH
-StandardError=file:$LOG_PATH
+StandardOutput=append:$LOG_PATH
+StandardError=append:$LOG_PATH
 User=$(whoami)
 Environment=NODE_ENV=production
 

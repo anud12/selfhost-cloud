@@ -44,7 +44,7 @@ const server = http.createServer(
     switch (req.method) {
         case "GET": {
             // Path to your shell script
-            
+            console.log(`${new Date().toISOString()}: inbound request on "${req.url}" from ${req.socket.remoteAddress}`)
 
             // Set headers for text streaming (chunked)
             res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Transfer-Encoding': 'chunked' });
@@ -93,9 +93,9 @@ server.listen(PORT, () => {
  * @param {string} signal - Signal name (SIGINT, SIGTERM)
  */
 const shutdown = signal => {
-    console.log(`Shutting down (${signal})...`);
+    console.log(`${new Date().toISOString()}: Shutting down (${signal})...`);
     server.close(err => {
-        if (err) console.error('Server close error:', err);
+        if (err) console.error(`${new Date().toISOString()}: Server close error:`, err);
         process.exit(err ? 1 : 0);
     });
 };
