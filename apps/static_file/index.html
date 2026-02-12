@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Homepage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            transition: background-color 1s;
+            color: #fff;
+        }
+
+        header {
+            padding: 50px 20px;
+        }
+
+        #time {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        #greeting {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+        }
+
+        #todo {
+            background: rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #todo input {
+            padding: 5px;
+            font-size: 1em;
+        }
+
+        #todo ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #todo li {
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        #todo li.done {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="time"></div>
+        <div id="greeting"></div>
+    </header>
+
+    <section id="todo">
+        <h3>My To-Do List</h3>
+        <input type="text" id="taskInput" placeholder="Add a task...">
+        <button id="addBtn">Add</button>
+        <ul id="taskList"></ul>
+    </section>
+
+    <script>
+        // --- Dynamic Time and Greeting ---
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+
+            let greeting = "Hello";
+            let bgColor = "#333";
+            if (hours < 12) {
+                greeting = "Good morning!";
+                bgColor = "#87CEEB"; // light blue
+            } else if (hours < 18) {
+                greeting = "Good afternoon!";
+                bgColor = "#FFA500"; // orange
+            } else {
+                greeting = "Good evening!";
+                bgColor = "#2c3e50"; // dark blue
+            }
+            document.getElementById('greeting').textContent = greeting;
+            document.body.style.backgroundColor = bgColor;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- Simple To-Do List with Local Storage ---
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+        const addBtn = document.getElementById('addBtn');
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            taskList.innerHTML = '';
+            tasks.forEach((task, idx) => {
+                const li = document.createElement('li');
+                li.textContent = task.text;
+                if (task.done) li.classList.add('done');
+                li.addEventListener('click', () => toggleTask(idx));
+                taskList.appendChild(li);
+            });
+        }
+
+        function saveTasks(tasks) {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            if (!taskInput.value) return;
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.push({ text: taskInput.value, done: false });
+            saveTasks(tasks);
+            taskInput.value = '';
+            loadTasks();
+        }
+
+        function toggleTask(index) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks[index].done = !tasks[index].done;
+            saveTasks(tasks);
+            loadTasks();
+        }
+
+        addBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', e => { if (e.key === 'Enter') addTask(); });
+
+        loadTasks();
+    </script>
+</body>
+
+</html>

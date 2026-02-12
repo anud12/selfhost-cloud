@@ -10,6 +10,6 @@ dependencies:
   - name: "in-memory-map"
     repository: "file://../apps/in-memory-map/helm"
     version: "0.1.0"
-  - name: "helm-deployer"
-    repository: "file://../apps/helm-deployer/helm"
+  - name: "static_file"
+    repository: "file://../apps/static_file/helm"
     version: "0.1.0"

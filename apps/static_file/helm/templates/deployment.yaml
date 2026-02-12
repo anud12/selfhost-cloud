@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{(include "selfhost-cloud.name" . ) | replace "_" "-"}}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{include "selfhost-cloud.name" .}}
+  template:
+    metadata:
+      labels:
+        app: {{include "selfhost-cloud.name" .}}
+        namespace: {{ .Values.global.namespace }}
+    spec:
+      containers:
+        - name: {{(include "selfhost-cloud.name" .)  | replace "_" "-"}}
+          image: {{.Values.global.artefactory}}/{{.Chart.Name}}

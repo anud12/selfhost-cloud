@@ -21,12 +21,12 @@ helm upgrade --install \
   selfhost-cloud-infrastucture ./infrastructure
 
 
-# helm dependency build ./helm
-# helm dependency update ./helm
+helm dependency build ./helm
+helm dependency update ./helm
 
-# helm upgrade --install \
-#   --create-namespace \
-#   --rollback-on-failure \
-#   --cleanup-on-fail \
-#   --reuse-values \
-#   selfhost-cloud ./helm
+helm upgrade --install \
+  --create-namespace \
+  --rollback-on-failure \
+  --cleanup-on-fail \
+  --reuse-values \
+  selfhost-cloud ./helm
