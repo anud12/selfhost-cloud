@@ -13,7 +13,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: selfhost-cloud-helm-deployer-service-external
+            name: selfhost-cloud-infrastucture-helm-deployer-service-external
             port:
               number: 80
       - path: /
