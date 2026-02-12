@@ -12,5 +12,5 @@ dependencies:
   - name: "load-balancer"
     version: "0.1.0"
   - name: "helm-deployer"
-    repository: "file://../apps/helm-deployer/helm"
+    repository: "file://./apps/helm-deployer/helm"
     version: "0.1.0"

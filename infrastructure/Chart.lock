@@ -6,7 +6,7 @@ dependencies:
   repository: ""
   version: 0.1.0
 - name: helm-deployer
-  repository: file://../apps/helm-deployer/helm
+  repository: file://./apps/helm-deployer/helm
   version: 0.1.0
-digest: sha256:b3bc300a5ce2f75e37a99c52f2dbf13d60b9a14b074c9eec5825349bf0f85cf4
-generated: "2026-01-30T14:02:50.679782943+02:00"
+digest: sha256:6ee7bd1dce6a172d0b8621576498f26605ad18c5dbc3c04598df78f77d8a23bc
+generated: "2026-02-12T16:16:36.558144595+02:00"

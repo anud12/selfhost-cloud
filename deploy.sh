@@ -7,16 +7,11 @@ for file in ./infrastructure/charts/*.tgz; do
 done
 
 
-for file in ./helm-deployer/charts/*.tgz; do
-  if [ -f "$file" ]; then
-    echo "Deleting $file"
-    rm -f "$file"
-  fi
-done
+
 
 HELM_DRIVER=configmap 
-helm dependency update ./infrastructure
 helm dependency build ./infrastructure
+helm dependency update ./infrastructure
 
 helm upgrade --install \
   --create-namespace \
@@ -26,12 +21,12 @@ helm upgrade --install \
   selfhost-cloud-infrastucture ./infrastructure
 
 
-helm dependency update ./helm
-helm dependency build ./helm
+# helm dependency build ./helm
+# helm dependency update ./helm
 
-helm upgrade --install \
-  --create-namespace \
-  --rollback-on-failure \
-  --cleanup-on-fail \
-  --reuse-values \
-  selfhost-cloud ./helm
+# helm upgrade --install \
+#   --create-namespace \
+#   --rollback-on-failure \
+#   --cleanup-on-fail \
+#   --reuse-values \
+#   selfhost-cloud ./helm
