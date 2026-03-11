@@ -1,2 +1,3 @@
 charts/*.tgz
 load_environment.sh
+.idea
