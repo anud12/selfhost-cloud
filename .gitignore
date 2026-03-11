@@ -1,2 +1,2 @@
 charts/*.tgz
-./load_environment.sh
+load_environment.sh

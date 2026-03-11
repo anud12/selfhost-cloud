@@ -1,106 +1,139 @@
 ---
-# Source: selfhost-cloud/templates/namespace.yaml
+# Source: selfhost-cloud-infrastructure/templates/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: public
 ---
-# Source: selfhost-cloud/charts/helm-deployer/templates/serviceaccount.yaml
+# Source: selfhost-cloud-infrastructure/charts/helm-deployer/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: selfhost-cloud-helm-deployer-sa
+  name: selfhost-cloud-infrastucture-helm-deployer-sa
   namespace: public
 ---
-# Source: selfhost-cloud/charts/helm-deployer/templates/role.yaml
+# Source: selfhost-cloud-infrastructure/charts/load-balancer/templates/deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notfound-nginx-conf
+  namespace: public
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      server_name _;
+      # Always return 404 with custom HTML body
+      location / {
+        default_type text/html;
+        return 404 '<!doctype html><html><head><meta charset="utf-8"><title>Not Found</title></head><body><h1>404 — Not Found</h1><p>The requested resource was not found on this server.</p></body></html>';
+      }
+    }
+---
+# Source: selfhost-cloud-infrastructure/charts/helm-deployer/templates/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: selfhost-cloud-helm-deployer-release-manager
+  name: selfhost-cloud-infrastucture-helm-deployer-release-manager
   namespace: public
 rules:
-  - apiGroups: [""]        # core resources
+  - apiGroups: [""]
     resources: ["secrets","services","configmaps","pods"]
     verbs: ["get","list","watch","create","update","patch","delete"]
-  - apiGroups: ["apps"]    # deployments, statefulsets, etc.
+  - apiGroups: ["apps"]
     resources: ["deployments","statefulsets","daemonsets","replicasets"]
     verbs: ["get","list","watch","create","update","patch","delete"]
-  - apiGroups: ["networking.k8s.io"]  # ingress, network policies
-    resources: ["ingresses","networkpolicies"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  # Gateway API resources (replaces Ingress)
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["httproutes","grpcroutes","tcproutes","tlsroutes","referencegrants"]
     verbs: ["get","list","watch","create","update","patch","delete"]
 ---
-# Source: selfhost-cloud/charts/helm-deployer/templates/roleBinding.yaml
+# Source: selfhost-cloud-infrastructure/charts/helm-deployer/templates/rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: selfhost-cloud-helm-deployer-sa-binding
+  name: selfhost-cloud-infrastucture-helm-deployer-sa-binding
   namespace: public
 subjects:
   - kind: ServiceAccount
-    name: selfhost-cloud-helm-deployer-sa
+    name: selfhost-cloud-infrastucture-helm-deployer-sa
     namespace: public
 roleRef:
   kind: Role
-  name: selfhost-cloud-helm-deployer-release-manager
+  name: selfhost-cloud-infrastucture-helm-deployer-release-manager
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: selfhost-cloud/charts/artifactory/templates/service.yaml
+# Source: selfhost-cloud-infrastructure/charts/artifactory/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: selfhost-cloud-artifactory-service
+  name: selfhost-cloud-infrastucture-artifactory-service
   namespace: public
 spec:
   type: NodePort
   selector:
-    app: selfhost-cloud-artifactory
+    app: selfhost-cloud-infrastucture-artifactory
     namespace: public
   ports:
     - port: 5000
       targetPort: 5000
       nodePort: 30500
 ---
-# Source: selfhost-cloud/charts/helm-deployer/templates/service.yaml
+# Source: selfhost-cloud-infrastructure/charts/helm-deployer/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: selfhost-cloud-helm-deployer-service
+  name: selfhost-cloud-infrastucture-helm-deployer-service-external
   namespace: public
 spec:
-  type: NodePort
-  selector:
-    app: selfhost-cloud-helm-deployer
-    namespace: public
   ports:
-    - port: 3001
-      targetPort: 3001
-      nodePort: 30501
+  - port: 80
+    targetPort: 3001
+    protocol: TCP
+  clusterIP: None
 ---
-# Source: selfhost-cloud/charts/artifactory/templates/deployment.yaml
+# Source: selfhost-cloud-infrastructure/charts/load-balancer/templates/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: notfound
+  namespace: public
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: notfound
+---
+# Source: selfhost-cloud-infrastructure/charts/artifactory/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: selfhost-cloud-artifactory-deployment
+  name: selfhost-cloud-infrastucture-artifactory-deployment
   namespace: public
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: selfhost-cloud-artifactory
+      app: selfhost-cloud-infrastucture-artifactory
       namespace: public
   template:
     metadata:
       labels:
-        app: selfhost-cloud-artifactory
+        app: selfhost-cloud-infrastucture-artifactory
         namespace: public
     spec:
       containers:
-        - name: selfhost-cloud-artifactory
+        - name: selfhost-cloud-infrastucture-artifactory
           image: registry:2
           ports:
             - containerPort: 5000
           volumeMounts:
-            - name: selfhost-cloud-artifactory-volume
+            - name: selfhost-cloud-infrastucture-artifactory-volume
               mountPath: /var/lib/registry
           resources:
             limits:
@@ -113,89 +146,84 @@ spec:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 30
+            initialDelaySeconds: 2
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 30
+            initialDelaySeconds: 2
+            periodSeconds: 5
       volumes:
-        - name: selfhost-cloud-artifactory-volume
+        - name: selfhost-cloud-infrastucture-artifactory-volume
           hostPath:
-            path: /home/acriha/volumes/selfhost-cloud/artifactory
+            path: /home/acriha/volumes/selfhost-cloud-infrastucture/artifactory
             type: DirectoryOrCreate
 ---
-# Source: selfhost-cloud/charts/helm-deployer/templates/deployment.yaml
+# Source: selfhost-cloud-infrastructure/charts/load-balancer/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: selfhost-cloud-helm-deployer-deployment
+  name: notfound
+  namespace: public
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: selfhost-cloud-helm-deployer
+      app: notfound
   template:
     metadata:
       labels:
-        app: selfhost-cloud-helm-deployer
-        namespace: public
+        app: notfound
     spec:
-      serviceAccount: selfhost-cloud-helm-deployer-sa
-      hostNetwork: true
-      securityContext:
-        runAsUser: 1000       # UID to run all containers as
-        runAsGroup: 1000      # optional: set GID
-        fsGroup: 1000         # optional: sets group ownership for mounted volumes
       containers:
-        - name: selfhost-cloud-helm-deployer
-          image: localhost:30500/helm-deployer
-          env:
-            - name: GITHUB_REPO
-              value: anud12/selfhost-cloud
-            - name: HELM_DRIVER
-              value: configmap
-          volumeMounts:
-            - mountPath: /usr/local/bin/kubectl
-              name: selfhost-cloud-helm-deployer-kubectl
-
-            - mountPath: /usr/local/bin/helm
-              name: selfhost-cloud-helm-deployer-helm
-
-            - mountPath: /home/user/.kube
-              name: selfhost-cloud-helm-deployer-kubeconfig
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
       volumes:
-        - name: selfhost-cloud-helm-deployer-kubectl
-          hostPath: 
-            path: /usr/local/bin/kubectl
-            type: File
-        - name: selfhost-cloud-helm-deployer-helm
-          hostPath:
-            path: /usr/local/bin/helm
-            type: File
-        - name: selfhost-cloud-helm-deployer-kubeconfig
-          hostPath:
-            path: /home/acriha/.kube
-            type: Directory
+      - name: nginx-conf
+        configMap:
+          name: notfound-nginx-conf
 ---
-# Source: selfhost-cloud/charts/in-memory-map/templates/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
+# Source: selfhost-cloud-infrastructure/charts/helm-deployer/templates/endpoints.yaml
+apiVersion: v1
+kind: Endpoints
 metadata:
-  name: selfhost-cloud-in-memory-map-deployment
+  name: selfhost-cloud-infrastucture-helm-deployer-service-external
+  namespace: public
+subsets:
+  - addresses:
+      - ip: 192.168.1.10
+    ports:
+      - port: 3001
+---
+# Source: selfhost-cloud-infrastructure/charts/load-balancer/templates/service.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: selfhost-cloud-infrastucture-load-balancer-httproute
+  namespace: public
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: selfhost-cloud-in-memory-map
-  template:
-    metadata:
-      labels:
-        app: selfhost-cloud-in-memory-map
-        namespace: public
-    spec:
-      containers:
-        - name: selfhost-cloud-in-memory-map
-          image: ngnix:latest
+  parentRefs:
+  - name: traefik
+    namespace: traefik
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /infrastructure/helm-deployer
+    backendRefs:
+    - name: selfhost-cloud-infrastucture-helm-deployer-service-external
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: notfound
+      port: 80

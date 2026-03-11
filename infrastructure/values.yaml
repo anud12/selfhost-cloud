@@ -2,5 +2,21 @@ global:
   namespace: public
   artefactory: localhost:30500
 
+# Values passed to the load-balancer sub-chart.
+# The load-balancer chart now uses Gateway API (HTTPRoute) instead of Ingress.
+load-balancer:
+  # Gateway API configuration for the HTTPRoute.
+  # The referenced Gateway must exist in the cluster (e.g., deployed by Traefik or another Gateway controller).
+  gateway:
+    # Name of the Gateway resource to attach routes to
+    name: traefik
+    # Namespace of the Gateway resource
+    namespace: traefik
+    # Optional: listener section name (e.g. "web" or "websecure")
+    sectionName: ""
+    # Optional: list of hostnames the HTTPRoute matches
+    # Leave empty to match all hostnames accepted by the Gateway
+    hostnames: []
+
 artifactory:
   volumeRootDirectory: /home/acriha/volumes

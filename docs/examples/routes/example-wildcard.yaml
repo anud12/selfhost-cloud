@@ -1,0 +1,13 @@
+- id: static-assets
+  host: static.example.com
+  path: /assets/*
+  pathMatch: prefix
+  upstream:
+    type: service
+    name: cdn-service
+    port: 80
+  status: active
+  metadata:
+    author: bob@example.com
+    timestamp: 2026-03-11T11:20:03Z
+    description: Serve static assets

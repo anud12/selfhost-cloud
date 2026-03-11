@@ -1,0 +1,4 @@
+- id: bad-route
+  host: "not a host with spaces"
+  path: api/v1/missing-leading-slash
+  status: active

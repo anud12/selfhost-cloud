@@ -1,0 +1,13 @@
+- id: users-api-v1
+  host: example.com
+  path: /api/v1/users
+  pathMatch: prefix
+  upstream:
+    type: service
+    name: users-service
+    port: 8080
+  status: active
+  metadata:
+    author: alice@example.com
+    timestamp: 2026-03-11T11:20:03Z
+    description: Route users API to users-service

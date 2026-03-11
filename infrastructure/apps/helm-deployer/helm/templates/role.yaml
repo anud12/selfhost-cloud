@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "selfhost-cloud.name" . }}-release-manager
+  namespace: {{ .Values.global.namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets","services","configmaps","pods"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments","statefulsets","daemonsets","replicasets"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
+  # Gateway API resources (replaces Ingress)
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["httproutes","grpcroutes","tcproutes","tlsroutes","referencegrants"]
+    verbs: ["get","list","watch","create","update","patch","delete"]
