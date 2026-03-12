@@ -9,6 +9,7 @@ const { spawn } = require('child_process');
 
 // Server configuration
 const PORT = process.env.PORT || 3001;
+const BASE = `/infrastructure/helm-deployer`;
 
 /**
  * @param {http.ServerResponse} res
@@ -43,6 +44,13 @@ const server = http.createServer(
     async (req, res) => {
     switch (req.method) {
         case "GET": {
+            // Health check endpoint: should not trigger deploy
+            if (req.url !== BASE) {
+                res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+                res.end('ok');
+                return;
+            }
+
             // Path to your shell script
             console.log(`${new Date().toISOString()}: inbound request on "${req.url}" from ${req.socket.remoteAddress}`)
 

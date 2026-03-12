@@ -20,13 +20,6 @@ spec:
   - matches:
     - path:
         type: PathPrefix
-        value: /infrastructure/helm-deployer
-    backendRefs:
-    - name: selfhost-cloud-infrastucture-helm-deployer-service-external
-      port: 80
-  - matches:
-    - path:
-        type: PathPrefix
         value: /
     backendRefs:
     - name: notfound

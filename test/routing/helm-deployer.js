@@ -4,23 +4,9 @@ const { request, BASE } = require('./helpers');
 
 const tests = [
   {
-    name: 'GET /infrastructure/helm-deployer returns 200',
+    name: 'GET /infrastructure/helm-deployer/health returns 200',
     async fn() {
-      const r = await request('/infrastructure/helm-deployer');
-      if (r.status !== 200) throw new Error(`expected 200, got ${r.status}`);
-    },
-  },
-  {
-    name: 'GET /infrastructure/helm-deployer body references git',
-    async fn() {
-      const r = await request('/infrastructure/helm-deployer');
-      if (!r.body.includes('git')) throw new Error(`body missing 'git'`);
-    },
-  },
-  {
-    name: 'GET /infrastructure/helm-deployer/sub returns 200 (prefix match depth)',
-    async fn() {
-      const r = await request('/infrastructure/helm-deployer/sub');
+      const r = await request('/infrastructure/helm-deployer/health');
       if (r.status !== 200) throw new Error(`expected 200, got ${r.status}`);
     },
   },

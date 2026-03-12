@@ -1,8 +1,0 @@
-- id: users-api-v1
-  host: example.com
-  path: /api/v1/users
-  upstream:
-    type: service
-    name: users-service
-    port: 8080
-  status: active

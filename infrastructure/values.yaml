@@ -20,3 +20,10 @@ load-balancer:
 
 artifactory:
   volumeRootDirectory: /home/acriha/volumes
+
+helm-deployer:
+  gateway:
+    name: traefik
+    namespace: traefik
+    sectionName: ""
+    hostnames: []
