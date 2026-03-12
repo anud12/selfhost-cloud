@@ -15,7 +15,7 @@ dependencies:
     repository: "file://./apps/not-found/helm"
     version: "0.1.0"
   - name: "clock"
-    repository: "file://./apps/clock/helm"
+    repository: "file://../apps/clock/helm"
     version: "0.1.0"
   - name: "helm-deployer"
     repository: "file://./apps/helm-deployer/helm"
