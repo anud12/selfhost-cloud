@@ -1,0 +1,6 @@
+apiVersion: v2
+name: not-found
+description: Not Found static app that serves a custom 404 page
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
