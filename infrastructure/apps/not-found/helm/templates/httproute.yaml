@@ -27,7 +27,7 @@ spec:
   - matches:
     - path:
         type: PathPrefix
-        value: /infrastructure/helm-deployer
+        value: /
     backendRefs:
-    - name: {{ include "selfhost-cloud.name" . }}-service-external
+    - name: {{ include "selfhost-cloud.name" . }}"-"{{ .Values.name }}
       port: 80

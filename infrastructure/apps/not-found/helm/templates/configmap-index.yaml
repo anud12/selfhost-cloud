@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}-index-html
+  namespace: {{ .Values.global.namespace }}
+data:
+  index.html: |-
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Route not defined</title>
+        <style>
+        :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa6b2;--accent:#7dd3fc}
+        body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:#e6eef6;margin:0;padding:24px}
+        .container{max-width:1100px;margin:0 auto}
+        .header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+        .header h1{font-size:20px;margin:0}
+        .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:14px;border-radius:8px;margin-bottom:12px}
+        .kv{display:flex;flex-wrap:wrap;gap:10px}
+        .kv .item{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:6px;min-width:120px}
+        .code{font-family:monospace;background:#07111a;padding:8px;border-radius:6px;color:#bfe9ff;overflow:auto}
+        a {color:var(--accent);text-decoration:none}
+        @media (max-width:640px){.header{flex-direction:column;align-items:flex-start}.container{padding:12px}}
+        <style>
+      </head>
+      <body>
+        <h1>Server is ok, but route is not defiend</h1>
+        <p>The requested resource was not found on this server.</p>
+        <h4>404 — Not Found</h4>
+      </body>
+    </html>
