@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+trap 'echo "Deploy failed" >&2' ERR
 
 for file in ./infrastructure/charts/*.tgz; do
   if [ -f "$file" ]; then
@@ -9,7 +12,7 @@ done
 
 
 
-HELM_DRIVER=configmap 
+export HELM_DRIVER=configmap
 helm dependency build ./infrastructure
 helm dependency update ./infrastructure
 

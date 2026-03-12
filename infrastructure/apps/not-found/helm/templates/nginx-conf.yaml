@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "selfhost-cloud.name" . }}{{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}-nginx-conf
+  name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-nginx-conf
   namespace: {{ .Values.global.namespace }}
 data:
   default.conf: |

@@ -5,8 +5,11 @@ dependencies:
 - name: load-balancer
   repository: ""
   version: 0.1.0
+- name: not-found
+  repository: file://./apps/not-found/helm
+  version: 0.1.0
 - name: helm-deployer
   repository: file://./apps/helm-deployer/helm
   version: 0.1.0
-digest: sha256:6ee7bd1dce6a172d0b8621576498f26605ad18c5dbc3c04598df78f77d8a23bc
-generated: "2026-02-12T16:16:36.558144595+02:00"
+digest: sha256:85d8524e57485c58e8ffe6ad35e189eeb3ee5aa15ebe52fabeefbe4ec1b95e92
+generated: "2026-03-12T14:55:27.775706779+02:00"

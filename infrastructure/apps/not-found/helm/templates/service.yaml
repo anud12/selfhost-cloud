@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "selfhost-cloud.name" . }}"-"{{ .Values.name }}-service
+  name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-service
   namespace: {{ .Values.global.namespace }}
 spec:
   ports:
@@ -9,4 +9,4 @@ spec:
     targetPort: 8080
     protocol: TCP
   selector:
-    app: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}
+    app: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}

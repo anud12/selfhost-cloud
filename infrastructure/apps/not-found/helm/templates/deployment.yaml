@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}-deployment
+  name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-deployment
   namespace: {{ .Values.global.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}
+      app: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}
   template:
     metadata:
       labels:
-        app: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}
+        app: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}
     spec:
       containers:
       - name: nginx
@@ -28,7 +28,7 @@ spec:
       volumes:
       - name: nginx-conf
         configMap:
-          name: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}-nginx-conf
+          name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-nginx-conf
       - name: index-html
         configMap:
-          name: {{include "selfhost-cloud.name" .}}"-"{{ .Values.name }}-index-html
+          name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-index-html

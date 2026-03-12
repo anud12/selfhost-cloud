@@ -1,16 +1,14 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{ include "selfhost-cloud.name" . }}"-"{{ .Values.name }}-httproute
+  name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-httproute
   namespace: {{ .Values.global.namespace }}
 spec:
-  {{- $gwLocal := default dict (index .Values "gateway") }}
-  {{- $lb := default dict (index $.Values "load-balancer") }}
-  {{- $gwParent := default dict (index $lb "gateway") }}
-  {{- $name := default (index $gwLocal "name") (index $gwParent "name") }}
-  {{- $namespace := default (index $gwLocal "namespace") (index $gwParent "namespace") }}
-  {{- $section := default (index $gwLocal "sectionName") (index $gwParent "sectionName") }}
-  {{- $hostnames := default (index $gwLocal "hostnames") (index $gwParent "hostnames") }}
+  {{- $gw := default dict (index .Values "gateway") }}
+  {{- $name := default (index $gw "name") "traefik" }}
+  {{- $namespace := default (index $gw "namespace") "traefik" }}
+  {{- $section := default (index $gw "sectionName") "" }}
+  {{- $hostnames := default (index $gw "hostnames") (list) }}
   parentRefs:
   - name: {{ $name }}
     namespace: {{ $namespace }}
@@ -29,5 +27,5 @@ spec:
         type: PathPrefix
         value: /infrastructure/helm-deployer
     backendRefs:
-    - name: {{ include "selfhost-cloud.name" . }}-service-external
+    - name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-service-external
       port: 80
