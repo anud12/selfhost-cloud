@@ -1,16 +1,29 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{ include "selfhost-cloud.name" . }}"-"{{ .Values.name }}-httproute
+  name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-httproute
   namespace: {{ .Values.global.namespace }}
 spec:
-  {{- $gwLocal := default dict (index .Values "gateway") }}
-  {{- $lb := default dict (index $.Values "load-balancer") }}
-  {{- $gwParent := default dict (index $lb "gateway") }}
-  {{- $name := default (index $gwLocal "name") (index $gwParent "name") }}
-  {{- $namespace := default (index $gwLocal "namespace") (index $gwParent "namespace") }}
-  {{- $section := default (index $gwLocal "sectionName") (index $gwParent "sectionName") }}
-  {{- $hostnames := default (index $gwLocal "hostnames") (index $gwParent "hostnames") }}
+  {{- $gwLocal := .Values.gateway | default dict }}
+  {{- $lb := .Values.load-balancer | default dict }}
+  {{- $gwParent := $lb.gateway | default dict }}
+  {{- $name := default (index $gwParent "name") (index $gwLocal "name") }}
+  {{- $namespace := default (index $gwParent "namespace") (index $gwLocal "namespace") }}
+  {{- $section := default (index $gwParent "sectionName") (index $gwLocal "sectionName") }}
+  {{- $hostnames := default (index $gwParent "hostnames") (index $gwLocal "hostnames") }}
+  parentRefs:
+  - name: {{ $name | quote }}
+    namespace: {{ $namespace | quote }}
+    {{- if $section }}
+    sectionName: {{ $section | quote }}
+    {{- end }}
+  {{- if $hostnames }}
+  hostnames:
+  {{- range $hostnames }}
+  - {{ . | quote }}
+  {{- end }}
+  {{- end }}
+
   parentRefs:
   - name: {{ $name }}
     namespace: {{ $namespace }}
@@ -29,5 +42,5 @@ spec:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: {{ include "selfhost-cloud.name" . }}"-"{{ .Values.name }}
+    - name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}
       port: 80
