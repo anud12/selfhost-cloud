@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.global.namespace }}
 spec:
   {{ $gwLocal := .Values.gateway | default dict }}
-  {{ $lb := .Values.load-balancer | default dict }}
+  {{ $lb := index .Values "load-balancer" | default dict }}
   {{ $gwParent := $lb.gateway | default dict }}
   {{ $name := default (index $gwParent "name") (index $gwLocal "name") }}
   {{ $namespace := default (index $gwParent "namespace") (index $gwLocal "namespace") }}
