@@ -24,18 +24,6 @@ spec:
   {{- end }}
   {{- end }}
 
-  parentRefs:
-  - name: {{ $name }}
-    namespace: {{ $namespace }}
-    {{- if $section }}
-    sectionName: {{ $section }}
-    {{- end }}
-  {{- if $hostnames }}
-  hostnames:
-  {{- range $hostnames }}
-  - {{ . | quote }}
-  {{- end }}
-  {{- end }}
   rules:
   - matches:
     - path:
