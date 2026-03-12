@@ -4,25 +4,20 @@ metadata:
   name: {{ include "selfhost-cloud.name" . }}-{{ .Values.name }}-httproute
   namespace: {{ .Values.global.namespace }}
 spec:
-  {{ $gwLocal := .Values.gateway | default dict }}
-  {{ $lb := index .Values "load-balancer" | default dict }}
-  {{ $gwParent := $lb.gateway | default dict }}
-  {{ $name := default (index $gwParent "name") (index $gwLocal "name") }}
-  {{ $namespace := default (index $gwParent "namespace") (index $gwLocal "namespace") }}
-  {{ $section := default (index $gwParent "sectionName") (index $gwLocal "sectionName") }}
-  {{ $hostnames := default (index $gwParent "hostnames") (index $gwLocal "hostnames") }}
   parentRefs:
-  - name: {{ $name | quote }}
-    namespace: {{ $namespace | quote }}
+  - name: {{ default (index .Values "load-balancer" "gateway" "name") (index .Values "gateway" "name") | quote }}
+    namespace: {{ default (index .Values "load-balancer" "gateway" "namespace") (index .Values "gateway" "namespace") | quote }}
+    {{ $section := default (index .Values "load-balancer" "gateway" "sectionName") (index .Values "gateway" "sectionName") }}
     {{ if $section }}
     sectionName: {{ $section | quote }}
-    {{- end }}
+    {{ end }}
+  {{ $hostnames := default (index .Values "load-balancer" "gateway" "hostnames") (index .Values "gateway" "hostnames") }}
   {{ if $hostnames }}
   hostnames:
   {{ range $hostnames }}
   - {{ . | quote }}
-  {{- end }}
-  {{- end }}
+  {{ end }}
+  {{ end }}
 
   rules:
   - matches:
