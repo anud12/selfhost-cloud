@@ -12,17 +12,8 @@ spec:
   {{ $section := default (index $gwParent "sectionName") (index $gwLocal "sectionName") }}
   {{ $hostnames := default (index $gwParent "hostnames") (index $gwLocal "hostnames") }}
   parentRefs:
-  - name: {{ $name | quote }}
-    namespace: {{ $namespace | quote }}
-    {{ if $section }}
-    sectionName: {{ $section | quote }}
-    {{ end }}
-  {{ if $hostnames }}
-  hostnames:
-  {{ range $hostnames }}
-  - {{ . | quote }}
-  {{ end }}
-  {{ end }}
+  - name: traefik
+    namespace: traefik
 
   rules:
   - matches:
