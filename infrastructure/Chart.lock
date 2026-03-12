@@ -9,10 +9,10 @@ dependencies:
   repository: file://./apps/not-found/helm
   version: 0.1.0
 - name: clock
-  repository: file://./apps/clock/helm
+  repository: file://../apps/clock/helm
   version: 0.1.0
 - name: helm-deployer
   repository: file://./apps/helm-deployer/helm
   version: 0.1.0
-digest: sha256:7fb78fe1d7538b1aa0250833ea127cbf0982be613f63b7ae79ab7e30a27e1749
-generated: "2026-03-12T15:57:24.223526101+02:00"
+digest: sha256:79c71402af2b7575d9d1ed8fe0efd11817c025854976f63e5356f23f58db2004
+generated: "2026-03-12T16:00:52.325560357+02:00"
