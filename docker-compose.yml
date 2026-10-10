@@ -1,3 +1,6 @@
+include:
+  - path: ./auth/docker-compose.yml
+
 services:
   gateway:
     build: .

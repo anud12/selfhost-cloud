@@ -1,0 +1,9 @@
+services:
+  auth:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - CLIENT_ID=your-client-id
+      - CLIENT_SECRET=your-client-secret
+    restart: always
