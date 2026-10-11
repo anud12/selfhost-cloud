@@ -4,7 +4,10 @@ import crypto from 'crypto';
 import { openapi } from './openapi';
 
 const app = express();
-if (process.env.TRUST_PROXY) app.set('trust proxy', process.env.TRUST_PROXY);
+// Express (unlike Koa) does not accept the "docker" alias, so map it to the
+// default Docker bridge network range.
+const TRUST_PROXY = process.env.TRUST_PROXY === 'docker' ? '172.16.0.0/12' : process.env.TRUST_PROXY;
+if (TRUST_PROXY) app.set('trust proxy', TRUST_PROXY);
 const PORT = process.env.PORT || 3000;
 
 // ---------------------------------------------------------------------------
