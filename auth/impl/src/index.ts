@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { openapi } from './openapi';
 
 const app = express();
+if (process.env.TRUST_PROXY) app.set('trust proxy', process.env.TRUST_PROXY);
 const PORT = process.env.PORT || 3000;
 
 // ---------------------------------------------------------------------------
@@ -394,9 +395,10 @@ app.get('/private/', (req, res) => {
 app.get('/private/login', (req, res) => {
   const state = randomToken(16);
   req.session.oauth_state = state;
-  const host = req.get('host') || 'localhost';
-  const scheme = req.get('x-forwarded-proto') || 'http';
-  const redirectUri = `${scheme}://${host}/private/callback`;
+  const baseUrl = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
+  const redirectUri = baseUrl
+    ? `${baseUrl}/private/callback`
+    : `${req.protocol}://${req.get('host')}/private/callback`;
   const qs = new URLSearchParams({
     response_type: 'code',
     client_id: DEMO_CLIENT_ID,
@@ -603,5 +605,5 @@ app.get('/openapi.json', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Auth (OAuth2) server listening on http://localhost:${PORT}`);
+  console.log(`Auth (OAuth2) server listening on port ${PORT}`);
 });

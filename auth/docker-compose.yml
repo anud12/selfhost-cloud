@@ -1,8 +1,14 @@
 services:
   auth:
     build:
-      context: ./impl
-      dockerfile: ../Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      # Public URL of the auth server (scheme://host[:port]), used for
+      # redirect_uri construction in the demo OAuth client flow.
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost}
+      # Trust X-Forwarded-* headers only when proxied by nginx (docker network).
+      TRUST_PROXY: docker
     restart: always
