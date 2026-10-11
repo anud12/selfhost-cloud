@@ -1,0 +1,20 @@
+{
+  "name": "auth-flow-test",
+  "version": "1.0.0",
+  "description": "End-to-end tests for the authentication flow using Playwright (headless Chromium)",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "playwright": "^1.64.0",
+    "typescript": "^7.0.2"
+  }
+}
